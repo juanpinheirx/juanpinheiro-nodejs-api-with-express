@@ -15,15 +15,14 @@ app.get('/', (_request, response) => {
 });
 
 app.get('/talker', async (req, res) => {
-  const body = req.body;
+  const [body] = req.body;
   const allTalker = await fs.readFile(join(__dirname, path), 'utf8');
   const allTalkers = JSON.parse(allTalker);
   if (body) {
-    return res.status(200).json(allTalkers)
-  } else {
-    return [];
+    return res.status(200).json(allTalkers);
   }
-})
+  return [];
+});
 
 app.listen(PORT, () => {
   console.log('Online');
