@@ -15,6 +15,7 @@ app.get('/', (_request, response) => {
 });
 
 app.get('/talker', async (req, res) => {
+<<<<<<< HEAD
   const [body] = req.body;
   const allTalker = await fs.readFile(join(__dirname, path), 'utf8');
   const allTalkers = JSON.parse(allTalker);
@@ -23,6 +24,17 @@ app.get('/talker', async (req, res) => {
   }
   return [];
 });
+=======
+  const body = req.body;
+  const allTalker = await fs.readFile(join(__dirname, path), 'utf8');
+  const allTalkers = JSON.parse(allTalker);
+  if (body) {
+    return res.status(200).json(allTalkers)
+  } else {
+    return [];
+  }
+})
+>>>>>>> 0e0e527cb62290c2661d5c3dd761915bbf4ca8a5
 
 app.listen(PORT, () => {
   console.log('Online');
