@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
+const { generateRandomToken } = require('./utils/token');
 
 const app = express();
 app.use(express.json());
@@ -18,7 +19,7 @@ app.get('/', (_request, response) => {
 
 app.get('/talker/:id', async (req, res) => {
   try {
-    const id = Number(req.params.id); 
+    const id = Number(req.params.id);
     const fileContent = await fs.readFile(filePath, 'utf8');
     const parsedTalker = JSON.parse(fileContent);
 
@@ -28,7 +29,9 @@ app.get('/talker/:id', async (req, res) => {
       return res.status(200).json(talker);
     }
 
-    return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+    return res
+      .status(404)
+      .json({ message: 'Pessoa palestrante não encontrada' });
   } catch (error) {
     console.error(error);
   }
@@ -42,6 +45,13 @@ app.get('/talker', async (req, res) => {
     return res.status(200).json(allTalkers);
   }
   return [];
+});
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  const user = email && password;
+  const newToken = generateRandomToken(16);
+  if (user) return res.status(200).json({ token: newToken });
 });
 
 app.listen(PORT, () => {
