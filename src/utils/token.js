@@ -10,8 +10,6 @@ function generateRandomToken(length) {
   return token;
 }
 
-const randomToken = generateRandomToken(16);
-
 module.exports = {
   generateRandomToken,
 };
