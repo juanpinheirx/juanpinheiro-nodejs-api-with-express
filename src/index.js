@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
 const { generateRandomToken } = require('./utils/token');
+const { validEmail, validPassword } = require('./middlewares/validateEmail');
 
 const app = express();
 app.use(express.json());
@@ -33,7 +34,7 @@ app.get('/talker/:id', async (req, res) => {
       .status(404)
       .json({ message: 'Pessoa palestrante não encontrada' });
   } catch (error) {
-    console.error(error);
+    return console.error(error);
   }
 });
 
@@ -47,11 +48,10 @@ app.get('/talker', async (req, res) => {
   return [];
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', validEmail, validPassword, (req, res) => {
   const { email, password } = req.body;
-  const user = email && password;
   const newToken = generateRandomToken(16);
-  if (user) return res.status(200).json({ token: newToken });
+  if (email && password) return res.status(200).json({ token: newToken });
 });
 
 app.listen(PORT, () => {
