@@ -3,6 +3,13 @@ const fs = require('fs/promises');
 const path = require('path');
 const { generateRandomToken } = require('./utils/token');
 const { validEmail, validPassword } = require('./middlewares/validateEmail');
+const {
+  validToken,
+  validTalker,
+  validAge,
+} = require('./middlewares/validateTalker');
+const { validTalk, validRate,
+  updateTalkers, readTalkers } = require('./middlewares/validateTalker');
 
 const app = express();
 app.use(express.json());
@@ -53,6 +60,32 @@ app.post('/login', validEmail, validPassword, (req, res) => {
   const newToken = generateRandomToken(16);
   if (email && password) return res.status(200).json({ token: newToken });
 });
+
+app.post(
+  '/talker',
+  validToken,
+  validTalker,
+  validAge,
+  validTalk,
+  validRate,
+  async (req, res) => {
+    const talkerData = await readTalkers(filePath);
+    const { name, age, talk } = req.body;
+  
+    const newTalker = {
+      id: talkerData.length + 1,
+      name,
+      age,
+      talk,
+    };
+  
+    const newData = [...talkerData, newTalker];
+  
+    updateTalkers(filePath, newData);
+  
+    res.status(201).json(newTalker);
+  },
+);
 
 app.listen(PORT, () => {
   console.log('Online');
