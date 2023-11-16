@@ -115,6 +115,14 @@ app.put('/talker/:id',
     return res.status(200).json(updatedTalker);
   });
 
+app.delete('/talker/:id', validToken, async (req, res) => {
+  const talkers = await fs.readFile(filePath);
+  const { id } = req.params;
+  const position = talkers.filter((talker) => Number(talker.id) !== +id);
+  updateTalkers(filePath, position);
+  return res.status(204).json();
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
