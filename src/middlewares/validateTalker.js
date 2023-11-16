@@ -1,4 +1,7 @@
 const fs = require('fs/promises');
+const path = require('path');
+
+const filePath = path.join('src', 'talker.json');
 
 const readTalkers = async (_path) => {
   try {
@@ -89,6 +92,21 @@ const validRate = (req, res, next) => {
   next();
 };
 
+const validateId = async (req, res, next) => {
+  const talkerData = await readTalkers(filePath);
+  console.log(talkerData);
+  const { id } = req.params;
+
+  const exists = talkerData.find((t) => Number(t.id) === +id);
+
+  if (!exists) {
+    return res.status(404).json({
+      message: 'Pessoa palestrante não encontrada',
+    }); 
+  }
+  next();
+};
+
 module.exports = {
   validToken,
   validTalker,
@@ -97,4 +115,5 @@ module.exports = {
   validRate,
   updateTalkers,
   readTalkers,
+  validateId,
 };

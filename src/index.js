@@ -7,9 +7,14 @@ const {
   validToken,
   validTalker,
   validAge,
+  validateId,
 } = require('./middlewares/validateTalker');
-const { validTalk, validRate,
-  updateTalkers, readTalkers } = require('./middlewares/validateTalker');
+const {
+  validTalk,
+  validRate,
+  updateTalkers,
+  readTalkers,
+} = require('./middlewares/validateTalker');
 
 const app = express();
 app.use(express.json());
@@ -71,21 +76,44 @@ app.post(
   async (req, res) => {
     const talkerData = await readTalkers(filePath);
     const { name, age, talk } = req.body;
-  
+
     const newTalker = {
       id: talkerData.length + 1,
       name,
       age,
       talk,
     };
-  
+
     const newData = [...talkerData, newTalker];
-  
+
     updateTalkers(filePath, newData);
-  
+
     res.status(201).json(newTalker);
   },
 );
+
+app.put('/talker/:id',
+  validToken,
+  validTalker,
+  validAge,
+  validTalk,
+  validRate,
+  validateId,
+  async (req, res) => {
+    const talkers = await readTalkers(filePath);
+    const { name, age, talk } = req.body;
+    const { id } = req.params;
+    const updatedTalker = {
+      id: +id,
+      name,
+      age,
+      talk,
+    };
+    const findTalkers = talkers.filter((talker) => talker.id !== +id);
+    const newTalker = [...findTalkers, updatedTalker];
+    updateTalkers(filePath, newTalker);
+    return res.status(200).json(updatedTalker);
+  });
 
 app.listen(PORT, () => {
   console.log('Online');
